@@ -1,10 +1,6 @@
 project = "hashicorp-demo"
 
-variable "registryUsername" {
-  type = string
-}
-
-variable "registryPassword" {
+variable "environment" {
   type = string
 }
 
@@ -16,7 +12,7 @@ app "dotnetcore-webapi" {
 
   labels = {
     "service" = "dotnetcore-webapi",
-    "environment" = "Development"
+    "environment" = var.environment
   }
 
   build {
@@ -26,8 +22,14 @@ app "dotnetcore-webapi" {
         image = "kubeopstester/dotnetcore-webapi"
         tag   = var.containerImageTag
         auth {
-          username = var.registryUsername
-          password = var.registryPassword
+          username = dynamic("vault", {
+            path = "kv/data/container/registry"
+            key  = "/data/username"
+          })
+          password = dynamic("vault", {
+            path = "kv/data/container/registry"
+            key  = "/data/password"
+          })
         }
       }
     }
@@ -36,11 +38,7 @@ app "dotnetcore-webapi" {
   config {
     env = {
       ASPNETCORE_URLS = "http://*:8090"
-      ASPNETCORE_ENVIRONMENT = "Development"
-      PASSWORD = dynamic("vault", {
-        path = "kv/data/database"
-        key  = "/data/password"
-      })
+      ASPNETCORE_ENVIRONMENT = var.environment
     }
   }
 
