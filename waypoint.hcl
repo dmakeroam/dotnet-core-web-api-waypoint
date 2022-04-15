@@ -4,6 +4,24 @@ variable "environment" {
   type = string
 }
 
+variable "registryUserName" {
+  type = string
+  default = dynamic("vault", {
+    path = "kv/data/container/registry"
+    key  = "/data/username"
+  })
+  sensitive = true
+}
+
+variable "registryPassword" {
+  type = string
+  default = dynamic("vault", {
+    path = "kv/data/container/registry"
+    key  = "/data/password"
+  })
+  sensitive = true
+}
+
 variable "containerImageTag" {
   type = string
 }
@@ -22,14 +40,8 @@ app "dotnetcore-webapi" {
         image = "kubeopstester/dotnetcore-webapi"
         tag   = var.containerImageTag
         auth {
-          username = dynamic("vault", {
-            path = "kv/data/container/registry"
-            key  = "/data/username"
-          })
-          password = dynamic("vault", {
-            path = "kv/data/container/registry"
-            key  = "/data/password"
-          })
+          username = var.registryUserName
+          password = var.registryPassword
         }
       }
     }
