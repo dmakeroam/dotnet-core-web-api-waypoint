@@ -37,6 +37,10 @@ app "dotnetcore-webapi" {
     env = {
       ASPNETCORE_URLS = "http://*:8090"
       ASPNETCORE_ENVIRONMENT = "Development"
+      PASSWORD = dynamic("vault", {
+        path = "kv/data/database"
+        key  = "/data/password"
+      })
     }
   }
 
