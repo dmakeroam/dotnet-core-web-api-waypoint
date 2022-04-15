@@ -19,8 +19,8 @@ jobs:
           unzip -d /usr/local/bin /tmp/waypoint.zip
           rm -rf /tmp/waypoint*
           waypoint init
-          waypoint build -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}"
-          waypoint deploy -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}"
+          waypoint build -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}" -var=containerImageTag="${{ github.sha }}"
+          waypoint deploy -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}" -var=containerImageTag="${{ github.sha }}"
           waypoint release
         env:
           WAYPOINT_VERSION: '${{ secrets.WAYPOINT_VERSION }}'

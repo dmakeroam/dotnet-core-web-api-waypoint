@@ -8,6 +8,10 @@ variable "registryPassword" {
   type = string
 }
 
+variable "containerImageTag" {
+  type = string
+}
+
 app "dotnetcore-webapi" {
 
   labels = {
@@ -20,7 +24,7 @@ app "dotnetcore-webapi" {
     registry {
       use "docker" {
         image = "kubeopstester/dotnetcore-webapi"
-        tag   = "1.0.1"
+        tag   = var.containerImageTag
         auth {
           username = var.registryUsername
           password = var.registryPassword
