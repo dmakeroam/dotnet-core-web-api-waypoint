@@ -1,0 +1,30 @@
+name: Deploy a .NET 6 app to Azure Kubernetes Service (AKS)
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    environment: Development
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+
+      - name: Waypoint Deploy
+        run: |
+          wget -q -O /tmp/waypoint.zip https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoint_${WAYPOINT_VERSION}_linux_amd64.zip
+          unzip -d /usr/local/bin /tmp/waypoint.zip
+          rm -rf /tmp/waypoint*
+          waypoint init
+          waypoint build -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}"
+          waypoint deploy -var=registryUsername="${{ secrets.REGISTRYUSERNAME }}" -var=registryPassword="${{ secrets.REGISTRYPASSWORD }}"
+          waypoint release
+        env:
+          WAYPOINT_VERSION: '${{ secrets.WAYPOINT_VERSION }}'
+          WAYPOINT_SERVER_ADDR: '${{ secrets.WAYPOINT_SERVER_ADDR }}'
+          WAYPOINT_SERVER_TOKEN: '${{ secrets.WAYPOINT_SERVER_TOKEN }}'
+          WAYPOINT_SERVER_TLS: '${{ secrets.WAYPOINT_SERVER_TLS }}'
+          WAYPOINT_SERVER_TLS_SKIP_VERIFY: '${{ secrets.WAYPOINT_SERVER_TLS_SKIP_VERIFY }}'
